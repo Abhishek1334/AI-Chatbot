@@ -17,8 +17,8 @@ A modern, feature-rich AI chatbot built with Next.js, TypeScript, and TailwindCS
 
 - **Framework**: Next.js 15 with App Router
 - **Language**: TypeScript
-- **Styling**: TailwindCSS
-- **UI Components**: Shadcn/ui + Radix UI
+- **Styling**: TailwindCSS v4 (latest) with OKLCH colors
+- **UI Components**: Shadcn/ui v0.0.4 (latest) + Radix UI
 - **Icons**: Lucide React
 - **Markdown**: React Markdown with syntax highlighting
 - **Theme**: Next-themes for dark/light mode
