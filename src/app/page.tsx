@@ -14,8 +14,6 @@ import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import ReactMarkdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
-import { Send, Bot, User } from 'lucide-react';
-import { ThemeToggle } from '@/components/theme-toggle';
 
 import { Message } from '@/types/types';
 import { fetchLLMReply } from '@/utils/fetchLLMReply';
@@ -93,147 +91,105 @@ export default function Home() {
     };
 
     return (
-        <div className="flex flex-col h-screen bg-background">
-            {/* Header */}
-            <header className="border-b bg-card/50 backdrop-blur supports-[backdrop-filter]:bg-card/50">
-                <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-                    <h1 className="text-xl font-semibold text-foreground flex items-center gap-2">
-                        <Bot className="h-5 w-5" />
-                        GenAI Chat
-                    </h1>
-                    <ThemeToggle />
-                </div>
-            </header>
+        <div className="flex flex-col h-screen max-w-2xl mx-auto px-4 py-2">
+            <h1 className="text-xl font-semibold mb-4">GenAI Chat</h1>
 
-            {/* Main Content */}
-            <div className="flex-1 container mx-auto px-4 py-4 max-w-4xl">
-                {/* Messages Area */}
-                <ScrollArea className="h-[calc(100vh-280px)] pr-4 mb-4">
-                    <div className="space-y-4">
-                        {messages
-                            .filter(m => m.role !== 'system')
-                            .map((msg, idx) => (
-                                <Card
-                                    key={idx}
-                                    className={`p-4 border ${
-                                        msg.role === 'user' 
-                                            ? 'bg-primary/5 border-primary/20 ml-8' 
-                                            : 'bg-card border-border mr-8'
-                                    }`}
-                                >
-                                    <div className="flex items-center gap-2 mb-2">
-                                        {msg.role === 'user' ? (
-                                            <User className="h-4 w-4 text-primary" />
-                                        ) : (
-                                            <Bot className="h-4 w-4 text-muted-foreground" />
+            <ScrollArea className="flex-1 overflow-y-auto space-y-2 pr-2 mb-4">
+                {messages
+                    .filter(m => m.role !== 'system')
+                    .map((msg, idx) => (
+                        <Card
+                            key={idx}
+                            className={`p-3 ${
+                                msg.role === 'user' ? 'bg-muted' : 'bg-card'
+                            }`}
+                        >
+                            <div className="text-xs font-medium mb-1">
+                                {msg.role === 'user'
+                                    ? '🧑 You'
+                                    : '🤖 Assistant'}
+                            </div>
+                            <div className="text-sm text-foreground whitespace-pre-wrap">
+                                {format === 'markdown' ? (
+                                    <ReactMarkdown
+                                        rehypePlugins={[rehypeHighlight]}
+                                    >
+                                        {msg.content}
+                                    </ReactMarkdown>
+                                ) : format === 'json' ? (
+                                    <pre className="overflow-auto">
+                                        {JSON.stringify(
+                                            JSON.parse(msg.content),
+                                            null,
+                                            2
                                         )}
-                                        <span className="text-xs font-medium text-muted-foreground">
-                                            {msg.role === 'user' ? 'You' : 'Assistant'}
-                                        </span>
-                                    </div>
-                                    <div className="text-sm text-foreground whitespace-pre-wrap prose prose-sm dark:prose-invert max-w-none">
-                                        {format === 'markdown' ? (
-                                            <div className="prose prose-sm dark:prose-invert max-w-none">
-                                                <ReactMarkdown
-                                                    rehypePlugins={[rehypeHighlight]}
-                                                >
-                                                    {msg.content}
-                                                </ReactMarkdown>
-                                            </div>
-                                        ) : format === 'json' ? (
-                                            <pre className="overflow-auto bg-muted p-2 rounded text-xs">
-                                                {JSON.stringify(
-                                                    JSON.parse(msg.content),
-                                                    null,
-                                                    2
-                                                )}
-                                            </pre>
-                                        ) : (
-                                            msg.content
-                                        )}
-                                    </div>
-                                </Card>
-                            ))}
-                        
-                        {loading && (
-                            <Card className="p-4 border border-border mr-8 bg-card">
-                                <div className="flex items-center gap-2 mb-2">
-                                    <Bot className="h-4 w-4 text-muted-foreground" />
-                                    <span className="text-xs font-medium text-muted-foreground">
-                                        Assistant
-                                    </span>
-                                </div>
-                                <div className="dot-pulse" />
-                            </Card>
-                        )}
-                        <div ref={messagesEndRef} />
-                    </div>
-                </ScrollArea>
-
-                {/* Error Display */}
-                {error && (
-                    <div className="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
-                        <div className="text-sm text-destructive">{error}</div>
+                                    </pre>
+                                ) : (
+                                    msg.content
+                                )}
+                            </div>
+                        </Card>
+                    ))}
+                {loading && (
+                    <div className="p-3 bg-muted rounded">
+                        <div className="text-xs font-medium mb-1">
+                            🤖 Assistant
+                        </div>
+                        <div className="dot-pulse" />
                     </div>
                 )}
+                <div ref={messagesEndRef} />
+            </ScrollArea>
 
-                {/* Controls */}
-                <div className="space-y-4">
-                    <div className="flex flex-col sm:flex-row gap-3">
-                        <Select
-                            value={systemPrompt}
-                            onValueChange={setSystemPrompt}
-                        >
-                            <SelectTrigger className="w-full sm:w-1/2">
-                                <SelectValue placeholder="Select Role" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {Object.entries(Roles).map(([value, label]) => (
-                                    <SelectItem key={value} value={value}>
-                                        {label}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                        <Select value={format} onValueChange={setFormat}>
-                            <SelectTrigger className="w-full sm:w-1/2">
-                                <SelectValue placeholder="Select Format" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {['plain', 'markdown', 'json', 'table'].map(f => (
-                                    <SelectItem key={f} value={f}>
-                                        {f.charAt(0).toUpperCase() + f.slice(1)}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    
-                    {/* Input Area */}
-                    <div className="flex gap-2">
-                        <Textarea
-                            value={input}
-                            onChange={e => setInput(e.target.value)}
-                            onKeyDown={e => {
-                                if (e.key === 'Enter' && !e.shiftKey) {
-                                    e.preventDefault();
-                                    handleSubmit();
-                                }
-                            }}
-                            placeholder="Type your message..."
-                            className="flex-1 min-h-[60px] resize-none"
-                            disabled={loading}
-                        />
-                        <Button
-                            onClick={handleSubmit}
-                            disabled={loading || !input.trim()}
-                            size="icon"
-                            className="h-[60px] w-[60px]"
-                        >
-                            <Send className="h-4 w-4" />
-                        </Button>
-                    </div>
+            {error && <div className="text-sm text-red-500 mb-2">{error}</div>}
+
+            <div className="space-y-2">
+                <div className="flex flex-col sm:flex-row gap-2">
+                    <Select
+                        value={systemPrompt}
+                        onValueChange={setSystemPrompt}
+                    >
+                        <SelectTrigger className="w-full sm:w-1/2">
+                            <SelectValue placeholder="Role" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {Object.entries(Roles).map(([value, label]) => (
+                                <SelectItem key={value} value={value}>
+                                    {label}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    <Select value={format} onValueChange={setFormat}>
+                        <SelectTrigger className="w-full sm:w-1/2">
+                            <SelectValue placeholder="Format" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {['plain', 'markdown', 'json', 'table'].map(f => (
+                                <SelectItem key={f} value={f}>
+                                    {f}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                 </div>
+                <Textarea
+                    value={input}
+                    onChange={e => setInput(e.target.value)}
+                    onKeyDown={e => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            handleSubmit();
+                        }
+                    }}
+                    placeholder="Type your message..."
+                />
+                <Button
+                    onClick={handleSubmit}
+                    disabled={loading || !input.trim()}
+                >
+                    {loading ? 'Sending...' : 'Send'}
+                </Button>
             </div>
         </div>
     );
