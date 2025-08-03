@@ -15,6 +15,11 @@ export async function POST(req: NextRequest) {
         const body = await req.json();
         const messages: Message[] = body.messages;
 
+        console.log(
+            '[Incoming Prompt]',
+            JSON.stringify(messages.slice(-2), null, 2)
+        );
+
         const res = await fetch(
             'https://openrouter.ai/api/v1/chat/completions',
             {
@@ -33,6 +38,8 @@ export async function POST(req: NextRequest) {
         const data = await res.json();
 
         const reply = data?.choices?.[0]?.message?.content;
+        
+        console.log('[LLM Response]', data.choices[0].message.content);
 
         if (!reply) {
             return new Response(
