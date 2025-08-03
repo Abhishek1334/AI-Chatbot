@@ -7,9 +7,10 @@ import 'highlight.js/styles/github-dark.css';
 interface MessageItemProps {
     msg: Message;
     format: string;
+    loading: boolean;
 }
 
-export function MessageItem({ msg, format }: MessageItemProps) {
+export function MessageItem({ msg, format, loading }: MessageItemProps) {
     const renderContent = () => {
         if (format === 'markdown') {
             return (
@@ -63,6 +64,8 @@ export function MessageItem({ msg, format }: MessageItemProps) {
                     </div>
                 </div>
             </div>
+            {/* loading  with three dots*/}
+            
             {msg.role === 'user' && <hr className="w-full border-gray-700 my-3 sm:my-4" />}
         </div>
     );

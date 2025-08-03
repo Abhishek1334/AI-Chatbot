@@ -55,7 +55,7 @@ export default function Home() {
                     : [
                           { role: 'system' as const, content: systemPrompt },
                           ...messages,
-                          { role: 'user' as const, content: formattedInput },
+                          { role: 'user' as const, content: input },
                       ];
             setError('');
             const res = await fetchLLMReply(updatedMessages);
@@ -75,7 +75,7 @@ export default function Home() {
     return (
         <main className="h-screen w-full bg-gray-900">
             <ChatContainer>
-                <MessageList messages={messages} format={format} />
+                <MessageList messages={messages} format={format} loading={loading}/>
                 
                 <div className="fixed bottom-0 left-0 right-0 bg-transparent z-10 bg-gray-900">
                     <div className="max-w-3xl mx-auto w-full px-4 pb-4">
