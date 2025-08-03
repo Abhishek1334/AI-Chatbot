@@ -54,7 +54,7 @@ export function ChatInput({
                     value={input}
                     onChange={handleInput}
                     onKeyDown={handleKeyDown}
-                    placeholder="Message ChatGPT..."
+                    placeholder="Ask me anything..."
                     className="w-full min-h-[60px] max-h-[200px] px-4 py-3 pr-10 sm:pr-12 text-white bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none overflow-hidden text-sm sm:text-base"
                     style={{
                         height: 'auto',
